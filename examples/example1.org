@@ -1,0 +1,11 @@
+* TODO I am a new todo item:things:important:
+SCHEDULED: <2015-08-01 Sat 12:00-13:00>
+DEADLINE: <2015-08-01 Sat 12:00-13:00>
+:LOGBOOK:
+:- State "SOMEDAY"    from "TODO"     [2015-07-01 Wed 09:45]:
+:END:
+
+:PROPERTIES:
+:FRUITS: pineapples
+:NAMES: bob, sally
+:END:
