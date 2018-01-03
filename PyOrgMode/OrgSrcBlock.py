@@ -4,6 +4,8 @@ import re
 from PyOrgMode import OrgElement, OrgPlugin
 
 '''
+See https://orgmode.org/worg/dev/org-element-api.html
+
 :label-fmt
     Format string used to write labels in current block, if different from
     org-coderef-label-format (string or nil).
@@ -33,6 +35,7 @@ class OrgSrcBlock(OrgPlugin):
     """A Plugin for source blocks"""
     def __init__(self):
         OrgPlugin.__init__(self)
+        # from org-element.el
         begin_exp = "^[ \t]*#\+BEGIN_SRC" + \
 	            "(?: +(\S-+))?" + \
 	            "((?: +(?:-l \".*?\"|[-+][A-Za-z]))+)?" + \
@@ -58,7 +61,9 @@ class OrgSrcBlock(OrgPlugin):
         elif srcblk:  # Creating a srcblk
             s = srcblk.group(0)
             a = s.split()
+            # language follows the #+BEGIN_SRC tag
             language = a[1].strip()
+            # parameters are next
             parameters = []
             if len(a) > 2:
                 parameters = " ".join(a[2:])
