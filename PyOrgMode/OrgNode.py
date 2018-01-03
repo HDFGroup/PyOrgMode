@@ -21,6 +21,8 @@
 #
 ##############################################################################
 
+import re
+
 from PyOrgMode import OrgElement, OrgPlugin
 
 

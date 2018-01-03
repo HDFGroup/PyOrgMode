@@ -23,6 +23,7 @@
 
 from PyOrgMode import OrgElement
 from PyOrgMode import OrgTable, OrgDrawer, OrgNode, OrgSchedule, OrgClock
+from PyOrgMode import OrgSrcBlock
 
 class OrgDataStructure(OrgElement):
     """
@@ -39,7 +40,8 @@ class OrgDataStructure(OrgElement):
                           OrgDrawer(),
                           OrgNode(),
                           OrgSchedule(),
-                          OrgClock())
+                          OrgClock(),
+                          OrgSrcBlock())
 
         # Add a root element
         #
