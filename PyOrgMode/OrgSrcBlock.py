@@ -84,17 +84,14 @@ class OrgSrcBlock(OrgPlugin):
         def __init__(self,
                      language="klingon",
                      parameters = [],
-                     value = "\"Hello, World!\"",
-                     name=""):
+                     value = "\"Hello, World!\""):
             OrgElement.__init__(self)
             self.language = language
             self.parameters = parameters
             self.value = value
-            self.name = name
             
         def _output(self):
-            output = ":" + self.name + ":\n"
-            for element in self.content:
-                output = output + str(element) + "\n"
-            output = output + self.indent
+            output = "#+BEGIN_SRC {} {}\n{}\n#+END_SRC".format(self.language,
+                                                               self.parameters,
+                                                               self.value)
             return output
