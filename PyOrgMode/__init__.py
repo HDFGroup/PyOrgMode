@@ -7,6 +7,7 @@ from .OrgDate import OrgDate
 from .OrgSchedule import OrgSchedule
 from .OrgClock import OrgClock
 from .OrgSrcBlock import OrgSrcBlock
+from .OrgKeyword import OrgKeyword
 from .OrgDataStructure import OrgDataStructure
 
 
