@@ -48,8 +48,7 @@ class OrgSrcBlock(OrgPlugin):
         srcblk = self.begin_regexp.search(line)
 
         if isinstance(current, OrgSrcBlock.Element):  # We are in a srcblk
-            self._append(current,
-                         line.rstrip("\n"))
+            self._append(current, self.keepindent_value + line.rstrip("\n"))
             end_srcblk = self.end_regexp.search(line)
             if end_srcblk:
                 # extract the souce code (last element is the end tag)
