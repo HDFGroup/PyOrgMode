@@ -36,12 +36,12 @@ class OrgSrcBlock(OrgPlugin):
     def __init__(self):
         OrgPlugin.__init__(self)
         # from org-element.el
-        begin_exp = "^[ \t]*#\+BEGIN_SRC" + \
+        begin_exp = "^[ \t]*#\+(BEGIN_SRC|begin_src)" + \
 	            "(?: +(\S-+))?" + \
 	            "((?: +(?:-l \".*?\"|[-+][A-Za-z]))+)?" + \
 	            "(.*)[ \t]*$"
         self.begin_regexp = re.compile(begin_exp)
-        end_exp = "^[ \t]*#\+END_SRC"
+        end_exp = "^[ \t]*#\+(END_SRC|end_src)"
         self.end_regexp = re.compile(end_exp)
 
     def _treat(self, current, line):
@@ -49,10 +49,11 @@ class OrgSrcBlock(OrgPlugin):
 
         if isinstance(current, OrgSrcBlock.Element):  # We are in a srcblk
             self._append(current, self.keepindent_value + line.rstrip("\n"))
+
             end_srcblk = self.end_regexp.search(line)
-            if end_srcblk:
-                # extract the souce code (last element is the end tag)
-                current.value = "\n".join(current.content[:-1])
+            if end_srcblk:  # Is this it?
+                # extract the souce code from content
+                current.value = "\n".join(current.content)
                 # clear the content
                 current.content.clear()
                 # go home
@@ -63,12 +64,13 @@ class OrgSrcBlock(OrgPlugin):
             # language follows the #+BEGIN_SRC tag
             language = a[1].strip()
             # parameters are next
-            parameters = []
+            parameters = ""
             if len(a) > 2:
                 parameters = " ".join(a[2:])
             current = self._append(current,
                                    OrgSrcBlock.Element(language,
                                                        parameters))
+            self._append(current, self.keepindent_value + line.rstrip("\n"))
         else:
             self.treated = False
             return current
@@ -90,7 +92,5 @@ class OrgSrcBlock(OrgPlugin):
             self.value = value
             
         def _output(self):
-            output = "#+BEGIN_SRC {} {}\n{}\n#+END_SRC".format(self.language,
-                                                               self.parameters,
-                                                               self.value)
+            output = "{}\n".format(self.value)
             return output
