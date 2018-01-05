@@ -1,0 +1,110 @@
+* Synopsis
+** TODO Describe the campaign
+* Internal Parameters and Exclusions
+** TODO Add an internal parameter for the batch queue name
+#+NAME: campaign
+#+BEGIN_SRC: shell :exports code :results silent
+cat exclude/CAMPAIGN
+#+END_SRC
+
+#+NAME: group
+#+BEGIN_SRC: shell :exports code :results silent
+cat exclude/GROUP
+#+END_SRC
+
+#+NAME: upcase-group
+#+HEADERS: :var g=group
+#+BEGIN_SRC: emacs-lisp :exports none :results silent
+(upcase g)
+#+END_SRC
+
+* Build and Run
+#+HEADERS: :var c=campaign
+#+HEADERS: :var g=group
+#+HEADERS: :var ug=upcase-group
+#+BEGIN_SRC: shell :exports code :results silent
+
+    module swap PrgEnv-pgi/5.2.82 PrgEnv-gnu
+    module load adios/1.13.0
+    module load python/3.5.1
+    PROJ_HOME=$PROJWORK/$g/$USER/$c
+    mkdir -p $PROJ_HOME
+    CODAR=$PROJ_HOME/CODAR
+    HEAT_XFER=$CODAR/Example-Heat_Transfer
+    mkdir -p $HEAT_XFER
+    git clone https://github.com/CODARcode/Example-Heat_Transfer.git $HEAT_XFER
+    cd $HEAT_XFER
+    make adios2
+    cd -
+    CHEETAH_HOME=$CODAR/cheetah
+    git clone https://github.com/CODARcode/cheetah.git $CHEETAH_HOME
+    cp ./heat_transfer_simple.py $CHEETAH_HOME/examples
+    sed -i -e "s/CSCNNN/$ug/" $CHEETAH_HOME/examples/heat_transfer_simple.py
+    cd $CHEETAH_HOME
+    OUTPUT_DIR=$PROJ_HOME/campaign_out
+    ./cheetah.py -e examples/heat_transfer_simple.py        -m titan -a "$HEAT_XFER/" -o $OUTPUT_DIR
+    cd $OUTPUT_DIR && ./run-all.sh
+
+#+END_SRC
+
+* The Environment
+** Emacs Version
+#+BEGIN_SRC: emacs-lisp :exports both
+emacs-version
+#+END_SRC
+
+** Org Version
+#+BEGIN_SRC: emacs-lisp :exports both
+org-version
+#+END_SRC
+
+** System Info
+#+BEGIN_SRC: shell :exports both
+uname -a
+#+END_SRC
+
+** Codar Application Hash
+#+NAME: heat-xfer-hash
+#+HEADERS: :var c=campaign
+#+HEADERS: :var g=group
+#+BEGIN_SRC: shell :exports results :results output
+
+    SRC_DIR=$PROJWORK/$g/$USER/$c/CODAR/Example-Heat_Transfer
+    git -C $SRC_DIR rev-parse --short HEAD
+
+#+END_SRC
+
+** Cheetah Application Hash
+#+NAME: cheetah-hash
+#+HEADERS: :var c=campaign
+#+HEADERS: :var g=group
+#+BEGIN_SRC: shell :exports results :results output
+
+    SRC_DIR=$PROJWORK/$g/$USER/$c/CODAR/cheetah
+    git -C $SRC_DIR rev-parse --short HEAD
+
+#+END_SRC
+
+* Key Findings
+** Size of =heat.bp=
+#+HEADERS: :var c=campaign
+#+HEADERS: :var g=group
+#+BEGIN_SRC: shell :exports both :results output
+
+  PROJ_HOME=$PROJWORK/$g/$USER/$c/campaign_out
+  stat -c %s "$PROJ_HOME/small_scale/run-000/heat.bp"
+
+#+END_SRC
+
+** Summary from =bpls=
+#+HEADERS: :var c=campaign
+#+HEADERS: :var g=group
+#+BEGIN_SRC: shell :exports both :results output
+
+  module swap PrgEnv-pgi/5.2.82 PrgEnv-gnu
+  module load adios/1.13.0
+  PROJ_HOME=$PROJWORK/$g/$USER/$c/campaign_out
+  bpls -al $PROJ_HOME/small_scale/run-000/heat.bp | grep -v timer | sort
+
+#+END_SRC
+
