@@ -48,10 +48,11 @@ class OrgSrcBlock(OrgPlugin):
         srcblk = self.begin_regexp.search(line)
 
         if isinstance(current, OrgSrcBlock.Element):  # We are in a srcblk
-            self._append(current, self.keepindent_value + line.rstrip("\n"))
-
             end_srcblk = self.end_regexp.search(line)
-            if end_srcblk:  # Is this it?
+            
+            if not end_srcblk:  # Keep it coming
+                self._append(current, self.keepindent_value + line.rstrip("\n"))
+            else:
                 # extract the souce code from content
                 current.value = "\n".join(current.content)
                 # clear the content
@@ -70,7 +71,6 @@ class OrgSrcBlock(OrgPlugin):
             current = self._append(current,
                                    OrgSrcBlock.Element(language,
                                                        parameters))
-            self._append(current, self.keepindent_value + line.rstrip("\n"))
         else:
             self.treated = False
             return current
@@ -92,5 +92,6 @@ class OrgSrcBlock(OrgPlugin):
             self.value = value
             
         def _output(self):
-            output = "{}\n\n".format(self.value)
+            output = "#+BEGIN_SRC: {} {}\n{}\n#+END_SRC\n\n".format(
+                self.language, self.parameters, self.value)
             return output
