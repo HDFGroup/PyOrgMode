@@ -92,5 +92,5 @@ class OrgSrcBlock(OrgPlugin):
             self.value = value
             
         def _output(self):
-            output = "{}\n".format(self.value)
+            output = "{}\n\n".format(self.value)
             return output
